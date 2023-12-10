@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <cstdlib> 
+#include <cstdlib>
 
 using namespace std;
 
@@ -18,6 +18,7 @@ struct Registro {
     float propina = 0.0;
     float totals = 0.0;
     float totals2;
+  
 };
 
 const int MAX_REGISTROS = 100; 
@@ -40,6 +41,7 @@ int main() {
     float impuesto;
     float cont2 = 0.0;
     float IVA = 0.16;
+   
 
     
     cargarBaseDatos(baseDeDatos, numRegistros);
@@ -72,7 +74,7 @@ int main() {
             cout << "Saliendo del programa. ¡Hasta luego!\n";
             break;
         default:
-            cout << "Opción no válida. Inténtelo de nuevo.\n";
+            cout << "Opcion no valida. Intentelo de nuevo.\n";
         }
 
     } while (opcion != 6);
@@ -88,7 +90,12 @@ void alta(Registro baseDeDatos[], int& numRegistros) {
     float total = 0;
     float totals = 0;
     float totals2;
+    int col = 0;
     totals2 = cont2 + totals;
+
+    static int ultimoTicket = 0;
+    int nuevoID = ++ultimoTicket;
+
     cout << "Bienvenido a los Boneless LJ, en que le podemos ayudar? " << endl;
     cout << " " << endl;
     cout << " Este seria nuestro menu " << endl;
@@ -106,10 +113,10 @@ void alta(Registro baseDeDatos[], int& numRegistros) {
     cout << " 6.- Tambien tenemos una promocion de Boneless, Papas y Dedos de queso a $105 " << endl;
     cout << " " << endl;
 
+
     if (numRegistros < MAX_REGISTROS) {
-        int nuevoID;
-        cout << "Ingrese el Ticket: ";
-        cin >> nuevoID;
+     
+       
 
         for (int i = 0; i < numRegistros; i++) {
             if (baseDeDatos[i].id == nuevoID) {
@@ -130,6 +137,7 @@ void alta(Registro baseDeDatos[], int& numRegistros) {
             cin >> baseDeDatos[numRegistros].pedido;
 
             cout << "Desea agregar otro articulo" << endl;
+            col = col + 1;
             cout << "(1.- Si 2.- No)" << endl;
             cin >> opc;
 
@@ -213,23 +221,27 @@ void alta(Registro baseDeDatos[], int& numRegistros) {
         total = cont2 + totals;
         totals2 = total + (total * baseDeDatos[numRegistros].IVA); 
 
-        
+        baseDeDatos[numRegistros].id = nuevoID;
         baseDeDatos[numRegistros].cont2 = cont2;
         baseDeDatos[numRegistros].totals = totals;
         baseDeDatos[numRegistros].total = total;
-        baseDeDatos[numRegistros].totals2 = totals2;
+        baseDeDatos[numRegistros].totals2 = totals2; 
+       
 
         numRegistros++;
 
-        cout << "Registro añadido correctamente.\n";
+        cout << "Registro cargado correctamente.\n";
     }
     else {
-        cout << "La base de datos está llena. No se pueden agregar más registros.\n";
+        cout << "La base de datos esta llena. No se pueden agregar mas registros.\n";
     }
 }
 
 void modificar(Registro baseDeDatos[], int numRegistros) {
     int idModificar;
+    int ocl;
+    int col;
+    float cont2 = 0;
     cout << "Ingrese el ticket del registro que desea modificar: ";
     cin >> idModificar;
 
@@ -237,14 +249,18 @@ void modificar(Registro baseDeDatos[], int numRegistros) {
         if (baseDeDatos[i].id == idModificar) {
             cout << "Ingrese el nuevo nombre: ";
             cin >> baseDeDatos[i].nombre;
-            cout << "Ingrese el nuevo apellido: ";
+            cout << "Ingrese la nueva fecha: ";
             cin >> baseDeDatos[i].apellido;
+            cout << "Cuantos pedidos desea introducir.. ";
+            cin >> col;
+          
+      
             cout << "Registro modificado correctamente.\n";
             return;
         }
     }
 
-    cout << "No se encontró un registro con el ID especificado.\n";
+    cout << "No se encontro un registro con el ID especificado.\n";
 }
 
 void eliminar(Registro baseDeDatos[], int& numRegistros) {
@@ -266,7 +282,7 @@ void eliminar(Registro baseDeDatos[], int& numRegistros) {
         }
     }
 
-    cout << "No se encontró un registro con el ID especificado.\n";
+    cout << "No se encontro un registro con el ID especificado.\n";
 }
 
 
@@ -282,17 +298,19 @@ void listar(Registro baseDeDatos[], int numRegistros) {
     if (numRegistros > 0) {
         cout << "Listado de registros:\n";
         for (int i = 0; i < numRegistros; i++) {
-            cout << "Ticket: " << baseDeDatos[i].id << ", Nombre: " << baseDeDatos[i].nombre
-                << ", fecha: " << baseDeDatos[i].apellido << ", Pedido: " << baseDeDatos[i].pedido
-                << ", Total: " << baseDeDatos[i].cont2 << ", IVA: " << baseDeDatos[i].cont2 * IVA
-                << ", Propina: " << baseDeDatos[i].totals << ", Total a pagar: " << baseDeDatos[i].totals2 << endl;
-
-
+            cout << ", Ticket: " << baseDeDatos[i].id << "\n"
+                ", Nombre: " << baseDeDatos[i].nombre<< "\n"
+                ", fecha: " << baseDeDatos[i].apellido << "\n"
+                ", Pedido: " << baseDeDatos[i].pedido<< "\n"
+                ", Total: " << baseDeDatos[i].cont2 << "\n"
+                ", IVA: " << baseDeDatos[i].cont2 * IVA << "\n"
+                ", Propina: " << baseDeDatos[i].totals << "\n"
+                ", Total a pagar: " << baseDeDatos[i].totals2 << endl;
 
         }
     }
     else {
-        cout << "La base de datos está vacía.\n";
+        cout << "La base de datos esta vacia.\n";
     }
 }
 
@@ -319,14 +337,18 @@ void guardarBaseDatos(Registro baseDeDatos[], int numRegistros) {
 
     if (archivo.is_open()) {
         for (int i = 0; i < numRegistros; i++) {
-            archivo << baseDeDatos[i].id << " "
-                << baseDeDatos[i].nombre << " "
-                << baseDeDatos[i].apellido << " "
-                << baseDeDatos[i].pedido << " "
-                << baseDeDatos[i].cont2 << " "
-                << baseDeDatos[i].IVA << " "
-                << baseDeDatos[i].totals << " "
-                << baseDeDatos[i].totals2 << "\n";
+            archivo << "//////////// REGISTROS //////////////" << "\n"
+                << "TICKET: " << baseDeDatos[i].id << ", \n"
+                << "NOMBRE: " << baseDeDatos[i].nombre << ", \n"
+                << "FECHA: " << baseDeDatos[i].apellido << ", \n"
+                << "ARTICULOS: " << baseDeDatos[i].pedido << ", \n"
+                << "PRECIO ARTICULOS: " << baseDeDatos[i].cont2 << ", \n"
+                << "LISTA: " << baseDeDatos[i].cont3 << ", \n"
+                << "PRECIO TOTAL: " << baseDeDatos[i].totals2 << ", \n"
+                << "PROPINA: " << baseDeDatos[i].totals << ", \n"
+                << "IVA: " << baseDeDatos[i].cont2 * baseDeDatos[i].IVA << ", \n"
+                << "TOTAL A PAGAR: " << baseDeDatos[i].totals2 << "\n"
+                << "/////////////////////////////////////" << "\n";
         }
         archivo.close();
         cout << "Base de datos guardada correctamente en 'basededatos.txt'.\n";
@@ -349,12 +371,6 @@ void cargarBaseDatos(Registro baseDeDatos[], int& numRegistros) {
                 >> baseDeDatos[numRegistros].IVA
                 >> baseDeDatos[numRegistros].totals
                 >> baseDeDatos[numRegistros].totals2;
-
-
-
-
-
-
 
             numRegistros++;
         }
